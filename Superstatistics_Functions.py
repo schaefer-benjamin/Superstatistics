@@ -82,7 +82,7 @@ class q_Exp_custom(st.rv_continuous):
         return all_bool
 qExp_custom_inst = q_Exp_custom(name='qExp_custom',a=0)
 
-def plot_fluctuation_histo(data,targetKurtosis,xlabel,exportName):
+def plot_fluctuation_histo(data,targetKurtosis,xlabel,export=False,exportName='Data'):
     plot=sns.distplot(data)
     #extract distplot range
     (xvalues_hist,yvalues_hist)=plot.get_lines()[0].get_data()
@@ -106,7 +106,8 @@ def plot_fluctuation_histo(data,targetKurtosis,xlabel,exportName):
     plt.xlabel(xlabel)
     plt.ylabel('PDF')
     plt.title('q='+str(round(qParameters[0],3)))
-    plt.savefig(exportName+'_Hist.pdf')
+    if export:
+        plt.savefig(exportName+'_Hist.pdf')
     plt.show()
 
 #Superstatistics functions
@@ -147,7 +148,7 @@ def betaList(data,T):
     return betaValues
 
 #compute and plot the average kurtosis as a function of time
-def plotLongTimeScale(data,startTime,EndTime,TimeStep,targetKurtosis,xlabel,exportName, timeUnit,timeUnitName):
+def plotLongTimeScale(data,startTime,EndTime,TimeStep,targetKurtosis,xlabel, timeUnit,timeUnitName,export=False,exportName='Data'):
     kurtosisList=[]
     timeList=range(startTime*timeUnit, EndTime*timeUnit, TimeStep*timeUnit)
     plotTimeList=range(startTime,EndTime,TimeStep)
@@ -165,11 +166,12 @@ def plotLongTimeScale(data,startTime,EndTime,TimeStep,targetKurtosis,xlabel,expo
             plt.legend([exportName,'Exponential'])
         else:
             plt.legend([exportName,'Target $\kappa$'])
-    plt.savefig('Long_time_scales_'+exportName+'.pdf')
+    if export:
+        plt.savefig('Long_time_scales_'+exportName+'.pdf')
     plt.show()
 
 #plot a low and high-variance snapshot
-def plotExtremeSnapshots(data,longTimeScale,xlabel,exportName):
+def plotExtremeSnapshots(data,longTimeScale,xlabel,export=False,exportName='Data'):
     longTimeScaleApplied=round(longTimeScale)
     #compute the variance of the different time windows
     varianceList=[]
@@ -202,7 +204,8 @@ def plotExtremeSnapshots(data,longTimeScale,xlabel,exportName):
                 size=20, weight='bold')
     #combine and show both plots
     f.subplots_adjust(wspace =0.2)
-    plt.savefig('ExtremeSnapshots_'+exportName+'.pdf')
+    if export:
+        plt.savefig('ExtremeSnapshots_'+exportName+'.pdf')
     plt.show()
 
 #function that returns the next guess, assuming the kurtosis is a linear function
@@ -256,7 +259,7 @@ def determineLongTimeScale(data,initialTimeGuess,kurtosisTolerance, targetKurtos
         result=minimize(averageKurtosis_func, initialTimeGuess, method='Nelder-Mead', tol=kurtosisTolerance)#,bounds=bnds
         return (result['x'][0],'Converged to kurtosis='+str(targetKurtosis+result['fun']),'Iterations needed='+str(result['nfev']))
 
-def fit_and_plot_betaDist(data,longTimeScale,xlabel,exportName,timeUnit,timeUnitName):
+def fit_and_plot_betaDist(data,longTimeScale,xlabel,timeUnit,timeUnitName,export=False,exportName='Data'):
     betaDis=betaList(data,round(longTimeScale))
     meanBeta=np.mean(betaDis)
     meanB=meanBeta
@@ -325,7 +328,8 @@ def fit_and_plot_betaDist(data,longTimeScale,xlabel,exportName,timeUnit,timeUnit
     plt.ylim(min(yvalues_hist),max(yvalues_hist)*1.1)
     plt.xlim(0)
     plt.legend(['$\chi^2$','inv. $\chi^2$','log-norm.',r'$\beta$ values'])
-    plt.savefig('BetaDistribution_'+exportName+'.pdf')
+    if export:
+        plt.savefig('BetaDistribution_'+exportName+'.pdf')
     plt.show()
 
 
